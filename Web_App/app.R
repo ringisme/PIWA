@@ -1,17 +1,17 @@
 rm(list=ls())
 
 
-library(lubridate)
-library(sqldf) # Allow me to use SQL syntax.
-library(scales) # For percentage number.
+library(lubridate) # For better manipulate Date.
+library(sqldf) # Allow to use SQL syntax in R.
+library(scales) # For create percentage number.
 library(gridExtra) # For combine two plots together.
 library(plyr)
 library(dplyr)
 library(shinythemes) # For more beautiful themes.
 library(Cairo) # For beautiful plots.
-library(plotly) # For creasting pie chart
+library(plotly) # For creaste pie chart
 library(ggplot2)
-library(purrr) # For using "map" functions.
+library(purrr) # For using "map" functions in R.
 
 D.data <- read.csv("../../../../Ddata/DRY_Weather.csv",
                    sep = ",",
@@ -102,8 +102,7 @@ shinyApp(
                                                            #plotlyOutput("P1_4.plot", height="200px")
                                                            helpText(strong(h1("Reserve Zone")),
                                                                     p(" "),
-                                                                    "waiting for prediction model")
-                                                           )
+                                                                    "waiting for prediction model"))
                                                 )
                                         ),
                                        # ----(2)
@@ -118,7 +117,7 @@ shinyApp(
                                                     column(12,
                                                            plotlyOutput("P1_2_1.plot"))
                                                 )
-                                                )
+                                        )
                                        
                            ),
                            
