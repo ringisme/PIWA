@@ -20,6 +20,7 @@ library(Cairo) # For beautiful plots.
 library(plotly) # For creasting pie chart
 library(purrr) # For using "map" functions.
 library(DT)
+library(ggpubr)# For better table displaying
 
 ### Set local path
 setwd("./Cores")
@@ -77,6 +78,7 @@ search.data = c(TEMP_1 = NA,
                 REL_HUM_1 = NA,
                 WIND_DIR_1 = NA,
                 WIND_SPEED_1 = NA)
-sens = 1
+
+sens = rep(1,12)
 
 

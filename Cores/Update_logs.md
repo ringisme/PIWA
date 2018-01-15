@@ -1,5 +1,14 @@
 # 更新日志
 
+## 1.15
+
+- Bug Fixes
+- Adjusted parts of layout
+- Allowed user to download the filtered data table
+- Added mini bar to adjust the sensitivity rate of each indicator
+
+
+
 ## 12.12待更新项目：
 
 - 将 FIRE_NUM, FIRE_SIZE 的名字更改为其他避免引起误会的名字；

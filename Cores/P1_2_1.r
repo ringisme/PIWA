@@ -50,9 +50,9 @@ create_table <- function(y1, m1, d1, D.data){
              WIND_DIR,
              WIND_SPEED
              ) %>%
-      arrange(Type) ->> D.tb
+      arrange(Type) -> D.tb
   
-  # ===== TABLE PART END =====
+  # ===== PART END FOR HISTOGRAM CHART=====
   
   # Write a function that can produce the "sigma-level" for the current value:
   sigma_level <- function(current_value, hist_col){
@@ -111,9 +111,17 @@ create_table <- function(y1, m1, d1, D.data){
   rm(i)
   
   # Draw the bar graph:
-  bar1 <<- ggplot(bar1.data, aes(x=Indicator, y=Sigma_level, fill=pos)) +
-      geom_bar(stat="identity", position="identity", width=0.5)
-    
+  bar1 <- ggplot(bar1.data, aes(x=Indicator, y=Sigma_level, fill=pos)) +
+      geom_bar(stat="identity", position="identity", width=0.5) +
+      theme(legend.position = "none")
+  
+  # Combine the table and the bar plot together:
+  D.tb.p <- ggtexttable(D.tb, theme=ttheme(base_style = "mCyan",
+                                 base_size = 16, tbody.style = tbody_style(face="bold")
+                              ))
+  
+  detailed.plot <<- ggarrange(bar1, D.tb.p,
+            nrow = 2,heights=c(2,1))
   
 }
 

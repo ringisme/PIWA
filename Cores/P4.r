@@ -1,4 +1,4 @@
-sm.search <- function(D.data, F.data, sens,
+sm.search <- function(D.data, F.data, sens, set_all,
                       search.data
                       ){
   D.data %>%
@@ -19,6 +19,7 @@ sm.search <- function(D.data, F.data, sens,
            WIND_DIR,
            WIND_SPEED
     ) -> clean.D.data
+
   
   determine_bounds <- function(var, sens, train_col){
     if(is.na(var) == TRUE){
@@ -42,13 +43,17 @@ sm.search <- function(D.data, F.data, sens,
   prepared.data <- as.data.frame(names(clean.D.data[-1]))
   names(prepared.data) <- "Indicator"
   
+  if(set_all == TRUE){
+    sens = rep(1,12)
+  }
+  
   for(i in 1:length(prepared.data$Indicator)){
     prepared.data$value[i] <- search.data[i]
     prepared.data$lower[i] <- determine_bounds(search.data[i],
-                                               sens,
+                                               sens[i],
                                                clean.D.data[,i+1])[2]
     prepared.data$upper[i] <- determine_bounds(search.data[i],
-                                               sens,
+                                               sens[i],
                                                clean.D.data[,i+1])[1]
   }
   
