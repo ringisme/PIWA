@@ -45,10 +45,9 @@ daily.plot <- function(v1, m1, d1, D.data, left.y, right.y){
                                            "Normal","Slightly high","Moderately high","High")
     )
     
-    mean2 <<- D.V1.ratio[4]
-    l2 <<- D.V1.ratio[3]
-    u2 <<- D.V1.ratio[5]
-    P2.data <<- P2.data
+    mean2 <- D.V1.ratio[4]
+    l2 <- D.V1.ratio[3]
+    u2 <- D.V1.ratio[5]
     
     # Then define the bounds:
     
@@ -96,7 +95,7 @@ daily.plot <- function(v1, m1, d1, D.data, left.y, right.y){
     
     # ===== For Daily Report ===================
     # ==========================================
-    p.dr <<- ggplot(data = P2.data, aes(x = Year, y = P2.data[, Vnum],
+    p.dr <- ggplot(data = P2.data, aes(x = Year, y = P2.data[, Vnum],
                                         text = paste(v1,":", P2.data[, Vnum],
                                                      "<br>level:", Var_level
                                                      ))) + 
@@ -123,8 +122,11 @@ daily.plot <- function(v1, m1, d1, D.data, left.y, right.y){
       new.p.dr$x$data[[i]]$hoverinfo <- "none"
     }
     new.p.dr$x$data[[9]]$hoverinfo <- "none"
-    
-    p2.plot <<- new.p.dr
+    # To ignore the useless warning (it caused by the incompatibility between the package
+    # "ggplot2" and "plotly")
+    new.p.dr$elementId <- NULL
+    p2.plot <- new.p.dr
+    ggplotly(p2.plot, tooltip = c("x","text"))
 
 }
 

@@ -54,13 +54,15 @@ daily.histo.plot <- function(m1, d1, F.data, left.y, right.y){
   }
   
   
-  pie.chart <<- plot_ly(pie.data, labels =~ Fire_Number, values= ~Percentage, type='pie',
-                       testposition = 'inside',
+  pie.chart <- plot_ly(pie.data, labels =~ Fire_Number, values= ~Percentage, type='pie',
                        textinfo = 'label+percent',
                        insidetextfont = list(color = '#FFFFFF'),
                        hoverinfo = 'text',
                        text = ~paste("There are", Percentage, "days")
                        )
+  # To ignore the useless warning (it caused by the incompatibility between the package
+  # "ggplot2" and "plotly")
+  pie.chart$elementId <- NULL
   pie.chart
   
 }

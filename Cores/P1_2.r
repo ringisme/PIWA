@@ -1,7 +1,7 @@
 # This R file is to create the tables for P1_2 tab:
-create_table <- function(y1, m1, d1, D.data){
+create_table <- function(current.day, D.data){
   
-  current.day <- as.Date(paste(y1,m1,d1), "%Y %m %d")
+  #current.day <- as.Date(paste(y1,m1,d1), "%Y %m %d")
   
   # Date Wrangling:
   # CAREFUL!! This data based on the "Today-in-history" logic:
@@ -15,13 +15,14 @@ create_table <- function(y1, m1, d1, D.data){
   # Write a function to calculate the individual sum info.
   find_levels <- function(x){
     ave <- mean(as.numeric(x), na.rm=TRUE)
+    std <- sd(x, na.rm=TRUE)
     max <- max(x, na.rm=TRUE)
     min <- min(x, na.rm=TRUE)
-    return(round(c(ave, max, min), digits = 1))
+    return(round(c(ave, std, max, min), digits = 1))
   }
   
   as.data.frame(apply(P.data[,-1],2, find_levels)) %>%
-    mutate(Type=c("Average", "Maximum", "Minimum")) -> D.tb # table for display
+    mutate(Type=c("Average", "SD","Maximum", "Minimum")) -> D.tb # table for display
   
   # Find the current day's situation:
   P.data %>%
@@ -32,7 +33,7 @@ create_table <- function(y1, m1, d1, D.data){
   D.tb <- rbind(D.tb, D.tb.2)
   rm(D.tb.2)
   
-  D.tb$Type <- factor(D.tb$Type, levels=c("Current", "Average", "Minimum", "Maximum"))
+  D.tb$Type <- factor(D.tb$Type, levels=c("Current","Average", "SD", "Minimum", "Maximum"))
       
   # Reorder the columns:
   D.tb %>%
@@ -50,7 +51,7 @@ create_table <- function(y1, m1, d1, D.data){
              WIND_DIR,
              WIND_SPEED
              ) %>%
-      arrange(Type) -> D.tb
+      arrange(Type) ->> D.tb
   
   # ===== PART END FOR HISTOGRAM CHART=====
   
@@ -111,18 +112,21 @@ create_table <- function(y1, m1, d1, D.data){
   rm(i)
   
   # Draw the bar graph:
-  bar1 <- ggplot(bar1.data, aes(x=Indicator, y=Sigma_level, fill=pos)) +
-      geom_bar(stat="identity", position="identity", width=0.5) +
-      theme(legend.position = "none")
+  bar1 <- ggplot(bar1.data, aes(x=Indicator, y=Sigma_level)) +
+      geom_bar(stat="identity", fill="#3498DB", width=0.5) +
+      theme(legend.position = "none") +
+      geom_hline(yintercept = 0)
+  
+  bar1$elementId <- NULL
+  bar1
   
   # Combine the table and the bar plot together:
-  D.tb.p <- ggtexttable(D.tb, theme=ttheme(base_style = "mCyan",
-                                 base_size = 16, tbody.style = tbody_style(face="bold")
-                              ))
+  #D.tb.p <- ggtexttable(D.tb, theme=ttheme(base_style = "mCyan",
+   #                              base_size = 16, tbody.style = tbody_style(face="bold")
+     #                         ))
   
-  detailed.plot <<- ggarrange(bar1, D.tb.p,
-            nrow = 2,heights=c(2,1))
-  
+  #detailed.plot <<- ggarrange(bar1, D.tb.p,
+            #nrow = 2,heights=c(2,1))
 }
 
 

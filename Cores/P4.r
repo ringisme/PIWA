@@ -1,4 +1,5 @@
 sm.search <- function(D.data, F.data, sens, set_all,
+                      date1, date2,
                       search.data
                       ){
   D.data %>%
@@ -34,7 +35,6 @@ sm.search <- function(D.data, F.data, sens, set_all,
   # ==========
   # Input here
   # ==========
-  search.data <<- search.data
   # The input "current day" values are:
 
   # ==== Input End ====
@@ -56,9 +56,6 @@ sm.search <- function(D.data, F.data, sens, set_all,
                                                sens[i],
                                                clean.D.data[,i+1])[1]
   }
-  
-  prepared.data <<- prepared.data
-  
   # Search!
   clean.D.data %>%
     filter(
@@ -84,38 +81,32 @@ sm.search <- function(D.data, F.data, sens, set_all,
     select(REPORT_DATE,FINAL_SIZE,CAUSE) %>%
     mutate(Date = as.Date(REPORT_DATE, format = "%m/%d/%Y %H:%M")) %>%
     select(4,2,3) -> clean.F.data
-  
-  # Then select the corrsponding dates:
-  # clean.F.data %>%
-    # filter(Date %in% prepared.data$Date)
-  
+
   # Combine two datasets together:
   for(i in 1:length(prepared.data$Date)){
-    prepared.data$FIRE_NUM[i] <- nrow(na.omit( # Summarize Fire Numbers.
+    prepared.data$FIRE_TIMES[i] <- nrow(na.omit( # Summarize Fire Numbers.
       clean.F.data[clean.F.data$Date == prepared.data$Date[i],]
     ))
     
-    prepared.data$FIRE_SIZE[i] <- sum( # Sum Fire Burned Area.
+    prepared.data$TOTAL_BURNED_SIZE[i] <- sum( # Sum Fire Burned Area.
       clean.F.data[clean.F.data$Date == prepared.data$Date[i], 2],
       na.rm = TRUE
     )
     
-    prepared.data$HUMAN[i] <- nrow(na.omit(
+    prepared.data$HUMAN_CAUSED_TIMES[i] <- nrow(na.omit(
       clean.F.data[clean.F.data$Date == prepared.data$Date[i] & clean.F.data$CAUSE == "Human",]
     ))
     
-    prepared.data$LIGHTNING[i] <- nrow(na.omit(
+    prepared.data$LIGHTNING_CAUSED_TIMES[i] <- nrow(na.omit(
       clean.F.data[clean.F.data$Date == prepared.data$Date[i] & clean.F.data$CAUSE == "Lightning",]
     ))
   }
-  # Now the prepared data is perfact.
-  
-  prepared.data <<- prepared.data
-  
-  # ==============
-  # Visuallation =
-  # ==============
-  
+  # Select the data in the selected date range:
+  prepared.data %>%
+    filter(Date >= date1 & Date <= date2) %>%
+    select(Date, TOTAL_BURNED_SIZE, 2:14, 16, 17) -> rearranged.data
+  DT::datatable(rearranged.data, 
+                options = list(pageLength=8, scrollX='600px'))
 }
 
 

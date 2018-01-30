@@ -1,4 +1,4 @@
- tw.plot <- function(v1, y1, m1, d1, r.num, p.num, D.data, F.data){
+ tw.plot <- function(v1, current.date, r.num, p.num, D.data, F.data){
     
     Vnum <- which(names(D.data) == v1)
     
@@ -6,7 +6,6 @@
     # Determine the historical period dataset:
     # ========================================
     
-    current.date <- as.Date(paste(y1,m1,d1), "%Y %m %d")
     hist_period <- current.date
     hist_period <- as.data.frame(hist_period)
     
@@ -62,7 +61,7 @@
     # Unlike the previous method, here I decide to save the two periods data
     # into two "different" dataframe to achieve drawing two plots in one figure.
     
-    # In order to reduce calculation cost, the "future data" will only contain
+    # In order to reduce calculation cost, the "future data" will only show
     # the information of selected variable:
     
     # The future data set will contain:
@@ -377,7 +376,7 @@
               axis.text.y=element_blank(),
               axis.ticks.y =element_blank()) +
         ylim(0, max(hist.data$FIRE_NUM, future.data$FIRE_NUM))
-    
+  
     #grid.arrange(hist.plot, future.plot, F1.plot, F2.plot,
                  #ncol=2, nrow=2, heights=c(3,1))
     
