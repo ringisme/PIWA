@@ -104,9 +104,7 @@ sm.search <- function(D.data, F.data, sens, set_all,
   # Select the data in the selected date range:
   prepared.data %>%
     filter(Date >= date1 & Date <= date2) %>%
-    select(Date, TOTAL_BURNED_SIZE, 2:14, 16, 17) -> rearranged.data
-  DT::datatable(rearranged.data, 
-                options = list(pageLength=8, scrollX='600px'))
+    select(Date, TOTAL_BURNED_SIZE, 2:14, 16, 17) ->> rearranged.data
 }
 
 

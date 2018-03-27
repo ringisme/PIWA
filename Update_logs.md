@@ -1,5 +1,15 @@
 # Update Logs
 
+## 3.22
+
+- Updated the "README.md". Please read it if you cannot run the app because of "wrong path".
+- Removed the "comma" existed in the displayed years.
+- Fixed the bug that the filtered table cannot be downloaded before.
+- The list of variables in the select box can be automatically formed now, so the name of the displayed variable can vary with the input data resources.
+- Revised the application structure to separated frame now. All the pre-loaded functions and variables have been settled in an isolated file, so that the loading and reacting time of the application will be shorter than before.
+
+
+
 ## 1.25
 
 - Changed UI designing package from "shiny" to "shinyBoard". Now it has a brand new UI having better performance.
