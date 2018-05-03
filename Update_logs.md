@@ -1,5 +1,14 @@
 # Update Logs
 
+## 5.1
+
+- Reconstruct the app frame to extend its compatibility with the different datasets.
+- Add visitor mode to let the app can be executed on sample data.
+- Add interface descriptions by using Markdown documents.
+- Bug fixes.
+
+
+
 ## 3.22
 
 - Updated the "README.md". Please read it if you cannot run the app because of "wrong path".
@@ -42,6 +51,6 @@
 
 ## 10.23
 
-- Revised several "For loop" structure to "Function"
+- Replaced several "For loop" structure with "Apply function"
 - Rearranged the core files
 

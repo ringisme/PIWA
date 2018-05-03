@@ -1,4 +1,8 @@
-source("../Cores/global.r", local=FALSE)
+if(DdataAddress == "samples"){
+    source("../Cores/samples.r", local=FALSE)
+}else{
+    source("../Cores/global.r", local=FALSE)}
+
 
 # ============
 # ui Section =
@@ -8,16 +12,23 @@ ui <- dashboardPage(
   dashboardHeader(title = "P.I.Trends BETA"),
   dashboardSidebar(
     sidebarMenu(
+      menuItem("Intorduction", tabName = "P0"),
       menuItem("Real Time Trend",
                menuSubItem("Contrast Trend", tabName = "P1_CT"),
                menuSubItem("Individual Trend", tabName = "P1_IT")
       ),
-      menuItem("Today in History", tabName = "Today_in_History"),
-      menuItem("Search Function", tabName = "Search_Function")
+      menuItem("Today in History", tabName = "P2"),
+      menuItem("Search Function", tabName = "P3")
     )
   ),
   dashboardBody(
     tabItems(
+      tabItem(tabName = "P0",
+              fluidRow(
+                box(width = 12, status = "primary",
+                    includeMarkdown("../dashboard/markdown_text/P0.md"))
+              )
+              ),
       # === Display Space fot P1 ===
       tabItem(tabName = "P1_CT",
               fluidRow(
@@ -28,46 +39,33 @@ ui <- dashboardPage(
               ),
               fluidRow(
                 box(width = 6, status = "primary",
-                    plotlyOutput("p1_1_l2.plot", height = "200px"))
-              ),
-              fluidRow(
-                box(width = 3, status = "info", 
-                    solidHeader = TRUE, 
-                    dateInput("p1_1_date",
-                              label = "What's the current date?",
-                              value = "2012-07-15"),
-                    selectInput("p1_1_var",
-                                label = "Choose a variale to display",
-                                #choices = c("Temperature" = "TEMP",
-                                # "BUI (Build-up Index)"  = "BUI",
-                                #"DC (Drought Code)" = "DC",
-                                # "DMC (Duff Moisture Code)" = "DMC",
-                                # "DSR (Daily Severity Rating)" = "DSR",
-                                # "FFMC (Fine Fuel Moisture Code)" = "FFMC",
-                                #"FWI (Fire Weather Index)" = "FWI",
-                                # "ISI (Initial Spread Index)" = "ISI",
-                                #"Rainfall" = "RAIN",
-                                # "Relative Humidity" = "REL_HUM",
-                                #"Wind Direction" = "WIND_DIR",
-                                # "Wind Speed" = "WIND_SPEED"
-                                #),
-                                choices = names(D.data)[4:length(names(D.data))],
-                                selected = names(D.data)[4]
-                                
-                                #selected = "Temperature"
-                    )
-                ),
-                box(width = 3, status = "info",
-                    solidHeader = TRUE,
-                    numericInput("p1_1_rnum",
-                                 label = "How many days you want to retrieve?",
-                                 value = 7),
-                    numericInput("p1_1_pnum",
-                                 label = "How many days you want to preview?",
-                                 value = 7)
-                )
+                    plotlyOutput("p1_1_l2.plot", height = "200px"),
+                    hr(),
+                    fluidRow(
+                      box(width = 6, status = "info", 
+                          solidHeader = TRUE, 
+                          dateInput("p1_1_date",
+                                    label = "What's the current date?",
+                                    value = weather.data$Date[(2*length(weather.data$Date)/3)-9]),
+                          selectInput("p1_1_var",
+                                      label = "Choose a variale to display",
+                                      choices = names(weather.data)[2:length(names(weather.data))],
+                                      selected = names(weather.data)[2]
+                          )
+                      ),
+                      box(width = 6, status = "info",
+                          solidHeader = TRUE,
+                          numericInput("p1_1_rnum",
+                                       label = "How many days you want to retrieve?",
+                                       value = 7),
+                          numericInput("p1_1_pnum",
+                                       label = "How many days you want to preview?",
+                                       value = 7)
+                    ))),
+                box(width = 6, status = "primary",
+                    includeMarkdown("../dashboard/markdown_text/P1_1.md"))              
               )
-      ),
+      ), # P1_1 end.
       
       tabItem(tabName = "P1_IT",
               fluidRow(
@@ -82,17 +80,23 @@ ui <- dashboardPage(
               fluidRow(
                 box(width = 3, status = "info",
                     collapsible = TRUE,
-                    dateInput("p1_2_date", value = "2012-07-15", label = "Please input the current date:")
-                )
+                    dateInput("p1_2_date", 
+                              value = weather.data$Date[(2*length(weather.data$Date)/3)-9], 
+                              # This value just for display better,
+                              # it Should be `sys.time` in the real applicaiton.
+                              label = "Please input the current date:")
+                ),
+                box(width = 9, status = "primary",
+                    includeMarkdown("../dashboard/markdown_text/P1_2.md")
+                    )
               )
-      ),
+      ), # P1_2 end.
       
-      # === Display Space for P2 ===
-      tabItem(tabName = "Today_in_History",
+      tabItem(tabName = "P2",
               fluidRow(
                 tabBox(width = 12, 
                        tabPanel("Weather Info", plotlyOutput("p2.plot"), hr()),
-                       tabPanel("Fire Events Info", plotlyOutput("p2_2.plot"), hr())
+                       tabPanel("Fire Events Info", plotlyOutput("pie.chart"), hr())
                 )
               ),
               fluidRow(
@@ -102,147 +106,103 @@ ui <- dashboardPage(
                       box(width = 6, solidHeader = TRUE,
                           selectInput("p2.month",
                                       label = "Month:", 
-                                      choices = c(#"01 January" = 1,
-                                        #"02 February"  = 2,
-                                        #"03 March" = 3,
-                                        "04 April" = 4,
-                                        "05 May" = 5,
-                                        "06 June" = 6,
-                                        "07 July" = 7,
-                                        "08 August" = 8,
-                                        "09 September" = 9,
-                                        "10 October" = 10,
-                                        "11 November" = 11
-                                        #"12 December" = 12
+                                      choices = c("January" = 1,
+                                        "February"  = 2,
+                                        "March" = 3,
+                                        "April" = 4,
+                                        "May" = 5,
+                                        "June" = 6,
+                                        "July" = 7,
+                                        "August" = 8,
+                                        "September" = 9,
+                                        "October" = 10,
+                                        "November" = 11,
+                                        "December" = 12
                                       ),
-                                      selected = 7)),
+                                      selected = month(weather.data$Date[(2*length(weather.data$Date)/3)-9]) )),
                       box(width = 6, solidHeader = TRUE,
                           numericInput("p2.day",
                                        label = "Day:",
                                        min = 1,
                                        max = 31,
-                                       value = 15))
+                                       value = day(weather.data$Date[(2*length(weather.data$Date)/3)-9]) ))
                     ),
                     selectInput("p2.var",
                                 label = "Choose a variale to display",
-                                choices = names(D.data)[4:length(names(D.data))],
-                                selected = names(D.data)[4])
+                                choices = names(weather.data)[2:length(names(weather.data))],
+                                selected = names(weather.data)[2]
+                                )
                 ),
                 box(width = 3, status = "info", solidHeader = TRUE,
                     sliderInput(inputId = "p2.date.range",
-                                label = "Training Date Range:",
+                                label = "Date Range:",
                                 sep = "",
-                                min = 1963, max = 2015,
-                                value = c(1969, 2010)),
+                                min = min(year(weather.data$Date), na.rm=TRUE), 
+                                max = max(year(weather.data$Date), na.rm=TRUE),
+                                value = c(min, max)),
                     actionButton("p2_submit", "Submit")
-                )
-              )
-      ),
-      # === Display Space for P4 ===
-      tabItem(tabName = "Search_Function",
-              fluidRow(
-                div(DT::dataTableOutput("p4.tb"), style = "font-size: 100%; width: 99%")
-              ),
-              fluidRow(box(width=2, status = "info", solidHeader = TRUE, numericInput("TEMP_1", "TEMP", value = NA),
-                           conditionalPanel(
-                             condition = "input.set_all == false",
-                             sliderInput("sens1", HTML('<p style="color:#3498DB; font-size:70%;">Sens of TEMP</p>'), 
-                                         min=0, max=3, value=1, step=0.1)
-                           ),
-                           numericInput("FWI_1", "FWI", value = NA),
-                           conditionalPanel(
-                             condition = "input.set_all == false",
-                             sliderInput("sens7", HTML('<p style="color:#3498DB; font-size:70%;">Sens of FWI</p>'), 
-                                         min=0, max=3, value=1, step=0.1)
-                           )
-              ),
-              box(width=2, status = "info", solidHeader = TRUE, numericInput("BUI_1", "BUI", value = 47),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens2", HTML('<p style="color:#3498DB; font-size:70%;">Sens of BUI</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  ),
-                  numericInput("ISI_1", "ISI", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens8", HTML('<p style="color:#3498DB; font-size:70%;">Sens of ISI</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  )
-              ),
-              box(width=2, status = "info", solidHeader = TRUE, numericInput("FFMC_1", "FFMC", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens3", HTML('<p style="color:#3498DB; font-size:70%;">Sens of FFMC</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  ),
-                  numericInput("RAIN_1", "RAIN", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens9", HTML('<p style="color:#3498DB; font-size:70%;">Sens of RAIN</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  )
-              ),
-              box(width=2, status = "info", solidHeader = TRUE, numericInput("DC_1", "DC", value = 255),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens4", HTML('<p style="color:#3498DB; font-size:70%;">Sens of DC</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  ),
-                  numericInput("REL_HUM_1", "REL_HUM", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens10", HTML('<p style="color:#3498DB; font-size:70%;">Sens of REL_HUM</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  )
-              ),
-              box(width=2, status = "info", solidHeader = TRUE, numericInput("DMC_1", "DMC", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens5", HTML('<p style="color:#3498DB; font-size:70%;">Sens of DMC</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  ),
-                  numericInput("WIND_DIR_1", "WIND_DIR", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens11", HTML('<p style="color:#3498DB; font-size:70%;">Sens of WIND_DIR</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  )
-              ),
-              box(width=2, status = "info", solidHeader = TRUE, numericInput("DSR_1", "DSR", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens6", HTML('<p style="color:#3498DB; font-size:70%;">Sens of DSR</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  ),
-                  numericInput("WIND_SPEED_1", "WIND_SPEED", value = NA),
-                  conditionalPanel(
-                    condition = "input.set_all == false",
-                    sliderInput("sens12", HTML('<p style="color:#3498DB; font-size:70%;">Sens of WIND_SPEED</p>'), 
-                                min=0, max=3, value=1, step=0.1)
-                  )
-              )
-              ),
-              fluidRow(
-                box(width=2,status = "info", solidHeader = TRUE, 
-                    radioButtons("filetype", "File type:",
-                                 choices = c("csv", "tsv")),
-                    downloadButton("downloadTable", "Download Table")
                 ),
-                box(width=2, status = "info", solidHeader = TRUE, 
-                    dateRangeInput(inputId = "date.range.p4",
-                                   label = "Please select the date range:",
-                                   start = "1963-05-01", end = "2015-09-11",
-                                   format = "yyyy-mm-dd",
-                                   min = "1963-05-01", max = "2015-09-11",
-                                   startview = "decade", width = "80%")
-                ),
-                box(width=2,status = "info", solidHeader = TRUE, 
-                    checkboxInput("set_all", "Set all sensitivities as 1",
-                                  value = TRUE), hr(),
-                    actionButton("p4_submit", "Submit")
-                )
+                box(width = 6, status = "primary",
+                    includeMarkdown("../dashboard/markdown_text/P2.md")
+                    )
+              )
+      ),# P2 end
+      
+      tabItem(tabName = "P3",
+              fluidRow(
+                  box(width = 2, status = "info",
+                      solidHeader = TRUE,
+                      uiOutput("set_range")
+                      ),
+                  box(width = 10,
+                      div(DT::dataTableOutput("p3.tb"), style = "font-size: 100%; width: 99%"),
+                      fluidRow(
+                        box(width = 3, status = "info", solidHeader = TRUE,
+                            dateRangeInput(
+                              inputId = "date.range.p3",
+                              label = "Please select the date range:",
+                              start = weather.data$Date[1], 
+                              end = weather.data$Date[length(weather.data$Date)],
+                              format = "yyyy-mm-dd",
+                              min = weather.data$Date[1], 
+                              max = weather.data$Date[length(weather.data$Date)],
+                              startview = "decade", width = "80%"
+                            ), hr(),
+                            actionButton("p3_submit", "Submit")
+                            ),
+                        box(width = 3, status = "info", solidHeader = TRUE,
+                            radioButtons("filetype", "File type:",
+                                         choices = c("csv", "tsv")),
+                            downloadButton("downloadTable", "Download Table")
+                            ),
+                        box(width = 6, status = "primary",
+                            includeMarkdown("../dashboard/markdown_text/P3.md")
+                            )
+                      )
+                  )
               )
       )
     ) # +++ End TabItems Part +++
   )# --- End Body Part ---
 )# ==== End UI part ====
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
